@@ -1,34 +1,122 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# PNEW.digital - Decentralized Innovation Platform (Next.js UI & Solidity smart contract)
 
-## Getting Started
+> The PNEW.digital app is a fully-functioning decentralized innovation application that allows users to create campaigns, manage campaigns, fund campaigns, and approve requests on the ethereum blockchain.
 
-First, run the development server:
+## Table of contents
 
-```bash
-npm run dev
-# or
-yarn dev
+* [General info](#general-info)
+* [Screenshots](#screenshots)
+* [Technologies](#technologies)
+* [Setup](#setup)
+* [Features](#features)
+* [Status](#status)
+* [Inspiration](#inspiration)
+* [Contact](#contact)
+
+## General info
+
+The purpose of this project is to help me to better understand Solidity, Ethereum, Next.js and to inspire people with valuable content.
+
+## Screenshots
+
+![Example screenshot](./img/screenshot.png)
+
+## Technologies
+
+* Solc - version 0.4.17
+* Truffle-hdwallet-provider - version 1.0.17
+* Web3 - version 1.4.0
+* Next - version 11.0.1
+* Next-routes - version 1.4.2
+* React - version 17.0.2
+* React-dom - version 17.0.2
+* Semantic-ui-css - version 2.4.1
+* Semantic-ui-react - version 2.0.3
+
+## Setup
+
+Please use yarn install & yarn dev to run the application in your local environment. Please also setup an infura account to deploy your contract.
+
+## Code Examples
+
+Examples of smart contract methods:
+
+```javascript
+
+contract CampaignFactory {
+    address[] public deployedCampaigns;
+
+    function createCampaign(uint256 minimum) public {
+        address newCampaign = new Campaign(minimum, msg.sender);
+        deployedCampaigns.push(newCampaign);
+    }
+
+    function getDeployedCampaigns() public view returns (address[]) {
+        return deployedCampaigns;
+    }
+}
+
+contract Campaign {
+    struct Request {
+        string description;
+        uint256 value;
+        address recipient;
+        bool complete;
+        uint256 approvalCount;
+        mapping(address => bool) approvals;
+    }
+
+    Request[] public requests;
+    address public manager;
+    uint256 public minimumContribution;
+    mapping(address => bool) public approvers;
+    uint256 public approversCount;
+
+    modifier restricted() {
+        require(msg.sender == manager);
+        _;
+    }
+
+    function Campaign(uint256 minimum, address creator) public {
+        manager = creator;
+        minimumContribution = minimum;
+    }
+
+    function contribute() public payable {
+        require(msg.value > minimumContribution);
+
+        approvers[msg.sender] = true;
+        approversCount++;
+    }
+}
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+List of features ready and TODOs for future development
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+* Campaign contract factory
+* Campaign overview page
+* New campaign page
+* Campaign management page (incl. funding & request creation)
+* Request management page
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+To-do list:
 
-## Learn More
+* Further improve visual design
+* Test cases for frontend
+* Deploy frontend to Heroku
+* Connect platform to fancy URL
 
-To learn more about Next.js, take a look at the following resources:
+## Status
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Project is: _wip_
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Inspiration
 
-## Deploy on Vercel
+Thanks to Udemy for providing inspiring content.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contact
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Created by [@pwagnerde](https://www.linkedin.com/in/pwagnerde/) - feel free to contact me!
